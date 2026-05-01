@@ -19,72 +19,98 @@ export default function Home() {
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="mx-auto max-w-6xl px-5 sm:px-8 pt-16 sm:pt-24 pb-14 sm:pb-20 grid md:grid-cols-[1.1fr_1fr] gap-10 items-center">
-          <div className="fade-up">
-            <span className="chip">Family kitchen · Since forever</span>
-            <h1 className="h-display text-[clamp(2.5rem,7vw,5rem)] mt-5 text-balance">
-              Soul food, <em className="text-[color:var(--rust)] not-italic">slow-cooked</em>,
+          <div>
+            <span className="chip hero-rise hero-rise-1">Est. by Deone · Family kitchen</span>
+            <h1 className="h-display text-[clamp(2.75rem,7.5vw,5.5rem)] mt-6 text-balance hero-rise hero-rise-2">
+              Slow food,
               <br />
-              served with love.
+              <span className="gilt italic">served loud.</span>
             </h1>
-            <p className="mt-5 text-lg text-[color:var(--ink-soft)] max-w-xl text-pretty">
+            <p className="mt-6 text-lg text-[color:var(--ink-soft)] max-w-xl text-pretty leading-relaxed hero-rise hero-rise-3">
               {BUSINESS.story}
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="#menu" className="btn btn-primary">See the menu</Link>
-              <Link href="/order" className="btn btn-ghost">Order in person</Link>
+            <div className="mt-8 flex flex-wrap gap-3 hero-rise hero-rise-4">
+              <Link href="#menu" className="btn btn-primary">See the menu →</Link>
+              <Link href="/order" className="btn btn-ghost">Order at the counter</Link>
             </div>
-            <div className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm text-[color:var(--ink-mute)]">
-              <Stat n="3" label="generations of recipes" />
-              <Stat n="6h" label="braising time, no shortcuts" />
-              <Stat n="100%" label="made-from-scratch" />
+            <div className="mt-12 flex flex-wrap gap-x-10 gap-y-4 text-sm text-[color:var(--ink-mute)] hero-rise hero-rise-5">
+              <Stat n="3" label="Generations of recipes" />
+              <Stat n="6h" label="Braising time, no shortcuts" />
+              <Stat n="0" label="Things from a can" />
             </div>
           </div>
-          <div className="relative aspect-[4/5] max-w-md justify-self-center md:justify-self-end">
-            <div className="absolute inset-0 rounded-[var(--radius-lg)] overflow-hidden bg-gradient-to-br from-[color:var(--gold-soft)] via-[color:var(--rust)] to-[color:var(--bg-warm)] shadow-[0_30px_80px_-30px_rgba(212,175,55,.35)] shimmer-gold">
+          <div className="relative aspect-[4/5] max-w-md justify-self-center md:justify-self-end hero-rise hero-rise-3">
+            <div className="absolute inset-0 rounded-[var(--radius-lg)] overflow-hidden bg-gradient-to-br from-[color:var(--gold-soft)] via-[color:var(--rust)] to-[color:var(--bg-warm)] plate-glow plate-float">
               <div className="absolute inset-0 grid place-items-center">
                 <PlateMark />
               </div>
-              <div className="absolute -bottom-2 -left-2 px-3 py-1.5 bg-[color:var(--paper)] border border-[color:var(--rust-deep)] rounded-full font-display text-sm text-[color:var(--gold)]">
-                ✦ Today&apos;s special
+              <div className="absolute top-4 left-4 px-3 py-1.5 bg-[color:var(--bg)]/85 backdrop-blur border border-[color:var(--rust-deep)] rounded-full font-display text-xs text-[color:var(--gold)] tracking-[0.2em] uppercase">
+                Tonight
+              </div>
+              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[color:var(--paper)] border border-[color:var(--rust-deep)] rounded-full font-display text-sm text-[color:var(--gold)] shadow-[0_8px_24px_-8px_rgba(212,175,55,.4)]">
+                ✦  Sunday Oxtail  ✦
               </div>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Fleuron divider */}
+      <div className="mx-auto max-w-6xl px-5 sm:px-8">
+        <div className="fleuron"><span className="fleuron-glyph">✦   ❋   ✦</span></div>
+      </div>
+
       {/* Menu */}
-      <section id="menu" className="mx-auto max-w-6xl px-5 sm:px-8 py-10 sm:py-16">
-        <div className="flex items-end justify-between flex-wrap gap-3 mb-8">
+      <section id="menu" className="mx-auto max-w-6xl px-5 sm:px-8 py-12 sm:py-20 scroll-mt-20">
+        <div className="flex items-end justify-between flex-wrap gap-3 mb-12">
           <div>
-            <div className="text-xs uppercase tracking-[0.2em] text-[color:var(--rust)] font-semibold">
+            <div className="text-xs uppercase tracking-[0.25em] text-[color:var(--rust)] font-semibold">
               The Menu
             </div>
-            <h2 className="h-display text-4xl sm:text-5xl mt-2">What&apos;s cooking</h2>
+            <h2 className="h-display text-4xl sm:text-5xl mt-3 italic">
+              <span className="gilt">À la carte</span>
+            </h2>
+            <p className="mt-2 text-[color:var(--ink-mute)] text-sm">
+              Everything is made the day you eat it.
+            </p>
           </div>
           <Link href="/order" className="btn btn-gold">Place an order →</Link>
         </div>
 
-        <div className="grid gap-12">
+        <div className="grid gap-14">
           {CATEGORIES.map((cat) => {
             const items = MENU.filter((m) => m.category === cat.key);
             if (items.length === 0) return null;
             return (
               <div key={cat.key}>
-                <h3 className="font-display text-2xl tracking-tight mb-5 flex items-center gap-3">
-                  <span>{cat.label}</span>
-                  <span className="flex-1 h-px bg-[color:var(--line)]" />
+                <h3 className="font-display text-3xl italic tracking-tight mb-6 flex items-center gap-4">
+                  <span className="text-[color:var(--gold)]">{cat.label}</span>
+                  <span className="flex-1 h-px bg-gradient-to-r from-[color:var(--rust-deep)] via-[color:var(--rust)] to-transparent" />
+                  <span className="text-[10px] uppercase tracking-[0.3em] text-[color:var(--ink-mute)]">
+                    {items.length} {items.length === 1 ? "dish" : "dishes"}
+                  </span>
                 </h3>
                 <div className="grid gap-4 sm:grid-cols-2">
                   {items.map((item) => (
-                    <article key={item.id} className="card p-5 sm:p-6 flex justify-between gap-5">
-                      <div>
-                        <div className="font-display text-lg font-semibold">{item.name}</div>
-                        <p className="text-sm text-[color:var(--ink-mute)] mt-1.5 text-pretty">
+                    <article
+                      key={item.id}
+                      className="card lift p-5 sm:p-6 flex justify-between gap-5 group"
+                    >
+                      <div className="min-w-0">
+                        <div className="font-display text-lg font-semibold tracking-tight group-hover:text-[color:var(--gold)] transition-colors">
+                          {item.name}
+                        </div>
+                        <p className="text-sm text-[color:var(--ink-mute)] mt-2 text-pretty leading-relaxed">
                           {item.description}
                         </p>
                       </div>
-                      <div className="font-display text-[color:var(--rust)] font-bold whitespace-nowrap">
-                        {formatPrice(item.priceCents)}
+                      <div className="text-right shrink-0">
+                        <div className="font-display text-2xl text-[color:var(--gold)] font-bold whitespace-nowrap leading-none">
+                          {formatPrice(item.priceCents)}
+                        </div>
+                        <div className="text-[10px] uppercase tracking-[0.18em] text-[color:var(--ink-mute)] mt-1.5">
+                          plate
+                        </div>
                       </div>
                     </article>
                   ))}
@@ -96,28 +122,34 @@ export default function Home() {
       </section>
 
       {/* Story strip */}
-      <section className="bg-[color:var(--paper)] border-y border-[color:var(--line)]">
-        <div className="mx-auto max-w-6xl px-5 sm:px-8 py-16 grid md:grid-cols-2 gap-10 items-center">
+      <section className="bg-[color:var(--paper)] border-y border-[color:var(--line)] relative overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.07] pointer-events-none">
+          <svg className="absolute -right-20 -top-10 w-[420px] text-[color:var(--gold)]" viewBox="0 0 200 200" fill="currentColor" aria-hidden>
+            <path d="M100 5 L120 80 L195 80 L135 125 L155 195 L100 150 L45 195 L65 125 L5 80 L80 80 Z" opacity="0.4" />
+          </svg>
+        </div>
+        <div className="mx-auto max-w-6xl px-5 sm:px-8 py-20 grid md:grid-cols-2 gap-12 items-center relative">
           <div>
-            <div className="text-xs uppercase tracking-[0.2em] text-[color:var(--rust)] font-semibold">
+            <div className="text-xs uppercase tracking-[0.25em] text-[color:var(--rust)] font-semibold">
               The Story
             </div>
-            <h2 className="h-display text-3xl sm:text-4xl mt-2 text-balance">
-              Recipes you can&apos;t get anywhere else.
+            <h2 className="h-display text-4xl sm:text-5xl mt-3 text-balance italic">
+              <span className="gilt">Three generations</span>
+              <br />
+              of cast-iron memory.
             </h2>
-            <p className="text-[color:var(--ink-soft)] mt-4 text-pretty leading-relaxed">
-              Deone learned to cook standing on a milk crate next to her grandmother&apos;s
-              cast-iron stove. Three generations later, those same recipes — handwritten,
-              never measured — show up on every plate we serve. We don&apos;t cut corners,
-              and we don&apos;t use anything we wouldn&apos;t feed our own family.
+            <p className="text-[color:var(--ink-soft)] mt-5 text-pretty leading-relaxed text-lg">
+              Deone learned at her grandmother&apos;s stove, milk crate under her feet.
+              Those recipes show up on every plate. We don&apos;t cut corners, and we
+              don&apos;t serve anything we wouldn&apos;t feed our own kids.
             </p>
-            <Link href="/order" className="btn btn-primary mt-6">Take an order</Link>
+            <Link href="/order" className="btn btn-primary mt-7">Place your order →</Link>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <Tile heading="Cast iron" sub="Everything starts in a seasoned skillet." rust />
-            <Tile heading="Six hours" sub="Trotters braise low and slow, every day." />
-            <Tile heading="Hand-peeled" sub="Nothing from a bag, nothing from a can." />
-            <Tile heading="Honey & vinegar" sub="The secrets aren't really secrets." rust />
+            <Tile heading="Cast iron" sub="Every dish starts in a seasoned skillet." rust />
+            <Tile heading="Six hours" sub="The trotters braise low. No exceptions." />
+            <Tile heading="Hand-peeled" sub="Nothing from a bag. Nothing from a can." />
+            <Tile heading="Honey, vinegar" sub="The two best secrets aren&apos;t secret." rust />
           </div>
         </div>
       </section>

@@ -62,7 +62,7 @@ export default async function PayPage({
             </div>
             <h1 className="h-display text-4xl mt-2">Confirm & pay</h1>
             <p className="mt-2 text-[color:var(--ink-mute)] text-sm">
-              Quick scan from grandma&apos;s pad. Pay below — she gets a green light the
+              Scanned from the counter. Tap below. The kitchen gets a green light the
               moment your card clears.
             </p>
           </div>
@@ -113,7 +113,7 @@ export default async function PayPage({
             <PayButton orderId={order.id} />
           ) : (
             <div className="mt-5 p-4 rounded-xl bg-[color:var(--cream)] border border-[color:var(--gold-soft)] text-sm">
-              <strong className="text-[color:var(--rust-deep)]">Demo mode</strong> — Stripe
+              <strong className="text-[color:var(--rust-deep)]">Demo mode.</strong> Stripe
               keys aren&apos;t added yet. Add{" "}
               <code className="text-xs bg-[color:var(--paper)] px-1.5 py-0.5 rounded border border-[color:var(--line)]">
                 STRIPE_SECRET_KEY

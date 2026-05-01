@@ -75,7 +75,7 @@ export const MENU: MenuItem[] = [
   {
     id: "peach-cobbler",
     name: "Peach Cobbler",
-    description: "Warm, with a buttered crust. Add ice cream — please.",
+    description: "Warm, with a buttered crust. Ice cream is mandatory.",
     priceCents: 695,
     category: "desserts",
   },
@@ -92,7 +92,7 @@ export const BUSINESS = {
   name: "Deone's Gourmet Trotters",
   tagline: "Soul food, slow-cooked, served with love.",
   story:
-    "Three generations of recipes from Deone's kitchen — passed down, written by hand, finally served to you.",
+    "Recipes Deone learned at her grandmother's stove. Handwritten, never measured, finally served to you.",
   hours: [
     { day: "Tue – Thu", open: "11:00 AM", close: "8:00 PM" },
     { day: "Fri – Sat", open: "11:00 AM", close: "10:00 PM" },

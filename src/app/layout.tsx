@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Inter } from "next/font/google";
+import { Fraunces, Manrope } from "next/font/google";
 import { BUSINESS } from "@/lib/menu";
 import "./globals.css";
 
@@ -9,7 +9,7 @@ const fraunces = Fraunces({
   axes: ["SOFT", "opsz"],
 });
 
-const inter = Inter({
+const manrope = Manrope({
   variable: "--font-inter",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -54,7 +54,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
+    <html lang="en" className={`${fraunces.variable} ${manrope.variable}`}>
       <body>
         {children}
         <script

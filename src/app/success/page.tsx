@@ -12,8 +12,8 @@ export default function SuccessPage() {
         </div>
         <h1 className="h-display text-4xl">Thank you!</h1>
         <p className="mt-3 text-[color:var(--ink-mute)] text-pretty">
-          Your payment is in. {BUSINESS.name} is plating up — show this screen at the
-          counter or just smile, we know you.
+          Card cleared. The kitchen is plating you up. Show this screen at the
+          counter, or just smile. We know you.
         </p>
         <Link href="/" className="btn btn-primary mt-7">Back to menu</Link>
       </div>

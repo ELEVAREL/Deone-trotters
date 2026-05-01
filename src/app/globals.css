@@ -44,20 +44,88 @@ html, body { background: var(--bg); color: var(--ink); }
 
 body {
   font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  position: relative;
   background-image:
-    radial-gradient(at 12% 8%, rgba(212, 175, 55, 0.08) 0, transparent 45%),
-    radial-gradient(at 88% 92%, rgba(212, 175, 55, 0.05) 0, transparent 50%);
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(212, 175, 55, 0.10) 0, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 100% 100%, rgba(184, 144, 42, 0.08) 0, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 0% 90%, rgba(95, 168, 80, 0.04) 0, transparent 70%);
   min-height: 100vh;
 }
+
+/* film-grain overlay — adds depth and warmth, never blocks input */
+body::before {
+  content: "";
+  position: fixed; inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  z-index: 1;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.96  0 0 0 0 0.83  0 0 0 0 0.43  0 0 0 0.18 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+body > * { position: relative; z-index: 2; }
 
 ::selection { background: rgba(212, 175, 55, 0.35); color: var(--ink); }
 
 .font-display { font-family: var(--font-display); font-feature-settings: "ss01", "ss02"; letter-spacing: -0.02em; }
 .font-sans { font-family: var(--font-sans); }
 
-.h-display { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.025em; line-height: 1.02; }
+.h-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.02;
+  font-variation-settings: "SOFT" 50, "opsz" 100;
+}
+
+/* Hand-drawn fleuron divider used between sections */
+.fleuron {
+  display: flex; align-items: center; gap: 18px;
+  color: var(--rust);
+}
+.fleuron::before, .fleuron::after {
+  content: "";
+  flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--rust-deep) 30%, var(--rust) 50%, var(--rust-deep) 70%, transparent);
+}
+.fleuron-glyph {
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: 0.4em;
+  color: var(--rust);
+}
+
+/* Subtle gold underline that grows from left on hover */
+.gold-underline { position: relative; }
+.gold-underline::after {
+  content: "";
+  position: absolute; left: 0; bottom: -3px;
+  width: 0; height: 1.5px;
+  background: linear-gradient(90deg, var(--rust), var(--gold), var(--rust-deep));
+  transition: width .35s cubic-bezier(.4,.1,.2,1);
+}
+.gold-underline:hover::after { width: 100%; }
+
+/* Editorial drop-shadow for hero plate */
+.plate-glow {
+  box-shadow:
+    0 1px 0 rgba(255, 230, 150, 0.15) inset,
+    0 60px 120px -30px rgba(212, 175, 55, 0.35),
+    0 30px 60px -20px rgba(0, 0, 0, 0.7);
+}
+
+/* Card hover lift */
+.card.lift { transition: transform .3s cubic-bezier(.4,.1,.2,1), box-shadow .3s ease, border-color .3s ease; }
+.card.lift:hover {
+  transform: translateY(-2px);
+  border-color: var(--rust-deep);
+  box-shadow:
+    0 1px 0 rgba(255, 230, 150, 0.06) inset,
+    0 24px 60px -24px rgba(212, 175, 55, 0.18),
+    0 18px 50px -22px rgba(0, 0, 0, 0.7);
+}
 
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
@@ -142,6 +210,33 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 .fade-up { animation: fadeUp .35s ease both; }
+
+/* Staggered hero reveal — orchestrated entrance */
+@keyframes heroRise {
+  from { opacity: 0; transform: translateY(14px); filter: blur(4px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+.hero-rise { animation: heroRise .9s cubic-bezier(.2,.8,.2,1) both; }
+.hero-rise-1 { animation-delay: .05s; }
+.hero-rise-2 { animation-delay: .18s; }
+.hero-rise-3 { animation-delay: .32s; }
+.hero-rise-4 { animation-delay: .48s; }
+.hero-rise-5 { animation-delay: .65s; }
+
+@keyframes plateFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(.4deg); }
+}
+.plate-float { animation: plateFloat 7s ease-in-out infinite; }
+
+/* Gold gilt text effect for special headings */
+.gilt {
+  background: linear-gradient(180deg, var(--gold-soft) 0%, var(--rust) 50%, var(--rust-deep) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
 
 @layer utilities {
   .text-balance { text-wrap: balance; }

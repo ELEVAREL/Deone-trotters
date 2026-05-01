@@ -168,7 +168,7 @@ export function OrderPad({ menu }: { menu: MenuItem[] }) {
 
       <div className="flex-1 grid lg:grid-cols-[1fr_400px] gap-0">
         {/* Menu pad */}
-        <section className="px-5 sm:px-8 py-6 overflow-y-auto">
+        <section className="px-5 sm:px-8 py-6 lg:overflow-y-auto pb-32 lg:pb-6">
           <div className="flex gap-2 flex-wrap mb-5 sticky top-0 bg-[color:var(--bg)] py-2 -mx-2 px-2 z-10">
             {(Object.keys(CATEGORY_LABEL) as MenuItem["category"][]).map((c) => (
               <button
@@ -251,7 +251,7 @@ export function OrderPad({ menu }: { menu: MenuItem[] }) {
         </section>
 
         {/* Cart sidebar */}
-        <aside className="border-t lg:border-t-0 lg:border-l border-[color:var(--line)] bg-[color:var(--paper)] flex flex-col">
+        <aside id="cart" className="border-t lg:border-t-0 lg:border-l border-[color:var(--line)] bg-[color:var(--paper)] flex flex-col scroll-mt-4">
           <div className="px-5 py-4 border-b border-[color:var(--line)]">
             <div className="text-xs uppercase tracking-[0.18em] text-[color:var(--ink-mute)]">
               Order
@@ -321,6 +321,33 @@ export function OrderPad({ menu }: { menu: MenuItem[] }) {
           </div>
         </aside>
       </div>
+
+      {/* Mobile sticky CTA — keeps cart one tap away */}
+      {itemCount > 0 && (
+        <div className="lg:hidden fixed inset-x-0 bottom-0 z-30 border-t border-[color:var(--line)] bg-[color:var(--paper)]/95 backdrop-blur px-4 py-3 fade-up">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 min-w-0">
+              <div className="text-[11px] uppercase tracking-[0.18em] text-[color:var(--ink-mute)]">
+                {itemCount} {itemCount === 1 ? "item" : "items"} · ready to ring up
+              </div>
+              <div className="font-display text-xl font-bold leading-tight truncate">
+                {formatPrice(total)}
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                document.getElementById("cart")?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
+              }}
+              className="btn btn-primary !py-3 !px-5 !text-sm shrink-0"
+            >
+              Review & QR →
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
@@ -342,59 +369,79 @@ function QRView({
 }) {
   const paid = status === "paid";
   return (
-    <main className="min-h-screen grid place-items-center px-5 py-10 bg-[color:var(--bg)]">
-      <div className="w-full max-w-md card p-6 sm:p-8 fade-up">
-        <div className="flex items-center justify-between mb-5">
-          <button onClick={onBack} className="text-sm text-[color:var(--ink-mute)] hover:text-[color:var(--ink)]">
+    <main className="min-h-screen grid place-items-center px-5 py-10 bg-[color:var(--bg)] relative overflow-hidden">
+      {/* Ambient gold mist */}
+      <div className="absolute inset-0 opacity-60 pointer-events-none">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-[radial-gradient(circle,rgba(212,175,55,.18)_0%,transparent_60%)]" />
+      </div>
+
+      <div className="relative w-full max-w-md card p-6 sm:p-9 fade-up">
+        {/* Top corner gold accents */}
+        <span className="absolute top-3 left-3 w-5 h-5 border-t-2 border-l-2 border-[color:var(--rust)] rounded-tl" />
+        <span className="absolute top-3 right-3 w-5 h-5 border-t-2 border-r-2 border-[color:var(--rust)] rounded-tr" />
+        <span className="absolute bottom-3 left-3 w-5 h-5 border-b-2 border-l-2 border-[color:var(--rust)] rounded-bl" />
+        <span className="absolute bottom-3 right-3 w-5 h-5 border-b-2 border-r-2 border-[color:var(--rust)] rounded-br" />
+
+        <div className="flex items-center justify-between mb-6">
+          <button
+            onClick={onBack}
+            className="text-sm text-[color:var(--ink-mute)] hover:text-[color:var(--gold)] transition gold-underline"
+          >
             ← Edit
           </button>
-          <span className={`chip ${paid ? "!bg-[color:var(--olive)] !text-[color:var(--paper)] !border-[color:var(--olive)]" : ""}`}>
-            {paid ? "Paid ✓" : "Awaiting payment"}
+          <span
+            className={`chip ${
+              paid
+                ? "!bg-[color:var(--olive)] !text-[color:var(--bg)] !border-[color:var(--olive)]"
+                : ""
+            }`}
+          >
+            {paid ? "Paid ✓" : "● Awaiting"}
           </span>
         </div>
 
-        <div className="text-center mb-4">
-          <div className="text-xs uppercase tracking-[0.2em] text-[color:var(--rust)] font-semibold">
-            Total due
+        <div className="text-center mb-5">
+          <div className="text-[10px] uppercase tracking-[0.3em] text-[color:var(--rust)] font-semibold">
+            Total Due
           </div>
-          <div className="font-display text-5xl font-bold mt-1">
+          <div className="font-display text-6xl font-bold mt-2 gilt italic leading-none">
             {formatPrice(total)}
           </div>
         </div>
 
         <div
-          className={`relative aspect-square rounded-[var(--radius)] grid place-items-center bg-[color:var(--paper)] border border-[color:var(--line)] overflow-hidden transition ${
+          className={`relative aspect-square rounded-[var(--radius)] grid place-items-center bg-[color:var(--paper)] border-2 border-[color:var(--rust)] overflow-hidden transition ${
             paid ? "glow-paid" : ""
           }`}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={qr} alt="Scan to pay" className="w-full h-full object-contain p-3" />
           {paid && (
-            <div className="absolute inset-0 grid place-items-center bg-[color:var(--olive)]/95 text-[color:var(--paper)] fade-up">
+            <div className="absolute inset-0 grid place-items-center bg-[color:var(--olive)]/95 text-[color:var(--ink)] fade-up">
               <div className="text-center">
-                <div className="text-7xl font-bold leading-none">✓</div>
-                <div className="font-display text-3xl mt-3">Paid!</div>
-                <div className="text-sm opacity-80 mt-2">Card cleared. Plate it up.</div>
+                <div className="text-8xl font-bold leading-none">✓</div>
+                <div className="font-display text-4xl italic mt-3">Paid.</div>
+                <div className="text-sm opacity-90 mt-2">Card cleared. Plate it up.</div>
               </div>
             </div>
           )}
         </div>
 
-        <p className="text-center text-sm text-[color:var(--ink-mute)] mt-5">
+        <p className="text-center text-sm text-[color:var(--ink-mute)] mt-6 leading-relaxed">
           {paid
-            ? "Receipt sent. New order below."
-            : "Hand the screen to the customer — they scan with their phone camera."}
+            ? "Receipt is in their inbox. Hit new order below."
+            : "Hand the screen across. Camera app. Scan. Done."}
         </p>
 
-        <div className="flex flex-col gap-2 mt-5">
-          <button onClick={onNew} className="btn btn-primary w-full">
-            {paid ? "New order" : "Cancel & new order"}
+        <div className="flex flex-col gap-3 mt-6">
+          <button onClick={onNew} className="btn btn-primary w-full !py-4">
+            {paid ? "New order →" : "Cancel & new order"}
           </button>
           <a
             href={payUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-center text-xs text-[color:var(--ink-mute)] hover:text-[color:var(--ink)]"
+            className="text-center text-xs text-[color:var(--ink-mute)] hover:text-[color:var(--gold)] transition tracking-wide"
           >
             Open pay link manually ↗
           </a>
