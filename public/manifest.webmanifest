@@ -4,8 +4,8 @@
   "description": "Soul food, slow-cooked, served with love.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fbf6ee",
-  "theme_color": "#b3431a",
+  "background_color": "#0a0806",
+  "theme_color": "#d4af37",
   "orientation": "portrait",
   "categories": ["food", "shopping", "lifestyle"],
   "icons": [

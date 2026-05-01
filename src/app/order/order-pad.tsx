@@ -176,8 +176,8 @@ export function OrderPad({ menu }: { menu: MenuItem[] }) {
                 onClick={() => setActiveCat(c)}
                 className={`px-4 py-2 rounded-full text-sm font-semibold transition border ${
                   activeCat === c
-                    ? "bg-[color:var(--ink)] text-[color:var(--paper)] border-[color:var(--ink)]"
-                    : "bg-[color:var(--paper)] text-[color:var(--ink-soft)] border-[color:var(--line)] hover:border-[color:var(--ink-mute)]"
+                    ? "bg-[color:var(--rust)] text-[color:var(--bg)] border-[color:var(--rust-deep)]"
+                    : "bg-[color:var(--paper)] text-[color:var(--ink-soft)] border-[color:var(--line)] hover:border-[color:var(--rust-deep)]"
                 }`}
               >
                 {CATEGORY_LABEL[c]}

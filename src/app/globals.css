@@ -1,21 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  /* Warm soul-food palette */
-  --bg: #fbf6ee;
-  --bg-warm: #f5ead6;
-  --paper: #fffaf2;
-  --ink: #1c1410;
-  --ink-soft: #4a3a30;
-  --ink-mute: #7a6a5e;
-  --line: #e6d8c3;
-  --rust: #b3431a;
-  --rust-deep: #8a3110;
-  --gold: #c08a2e;
-  --gold-soft: #e6c97a;
-  --olive: #4f5d36;
-  --cream: #f3e3c2;
-  --shadow-warm: 0 1px 0 rgba(28, 20, 16, 0.04), 0 16px 40px -20px rgba(138, 49, 16, 0.18);
+  /* Black & gold supper-club palette */
+  --bg: #0a0806;
+  --bg-warm: #14100a;
+  --paper: #1a1510;
+  --ink: #f4e7c0;
+  --ink-soft: #c9b88a;
+  --ink-mute: #8a7a5a;
+  --line: #2e2618;
+  --rust: #d4af37;          /* primary gold */
+  --rust-deep: #b8902a;     /* darker gold for hover */
+  --gold: #e9c75c;          /* lighter accent */
+  --gold-soft: #f5dc8a;
+  --olive: #5fa850;         /* paid status green that pops on black */
+  --cream: #241a0e;         /* dark gold-tinted, used for chip bg */
+  --shadow-warm: 0 1px 0 rgba(255, 220, 138, 0.04) inset, 0 18px 50px -22px rgba(0, 0, 0, 0.7);
   --radius: 14px;
   --radius-lg: 22px;
 }
@@ -47,10 +47,12 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   background-image:
-    radial-gradient(at 12% 8%, rgba(192, 138, 46, 0.08) 0, transparent 45%),
-    radial-gradient(at 88% 92%, rgba(179, 67, 26, 0.07) 0, transparent 50%);
+    radial-gradient(at 12% 8%, rgba(212, 175, 55, 0.08) 0, transparent 45%),
+    radial-gradient(at 88% 92%, rgba(212, 175, 55, 0.05) 0, transparent 50%);
   min-height: 100vh;
 }
+
+::selection { background: rgba(212, 175, 55, 0.35); color: var(--ink); }
 
 .font-display { font-family: var(--font-display); font-feature-settings: "ss01", "ss02"; letter-spacing: -0.02em; }
 .font-sans { font-family: var(--font-sans); }
@@ -62,21 +64,30 @@ body {
   gap: 8px; padding: 14px 22px;
   font-weight: 600; font-size: 15px;
   border-radius: 999px;
-  transition: transform .15s ease, background .2s ease, box-shadow .2s ease;
+  transition: transform .15s ease, background .2s ease, box-shadow .2s ease, color .2s ease;
   cursor: pointer; user-select: none;
   white-space: nowrap;
 }
 .btn:active { transform: translateY(1px); }
 .btn-primary {
-  background: var(--rust); color: #fffaf2;
-  box-shadow: 0 1px 0 rgba(255,255,255,.2) inset, 0 8px 22px -10px rgba(138,49,16,.5);
+  background: linear-gradient(180deg, var(--gold) 0%, var(--rust) 60%, var(--rust-deep) 100%);
+  color: var(--bg);
+  box-shadow:
+    0 1px 0 rgba(255, 240, 200, 0.4) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.2) inset,
+    0 8px 22px -10px rgba(212, 175, 55, 0.5);
 }
-.btn-primary:hover { background: var(--rust-deep); }
+.btn-primary:hover {
+  background: linear-gradient(180deg, var(--gold-soft) 0%, var(--gold) 60%, var(--rust) 100%);
+}
 .btn-ghost {
   background: transparent; color: var(--ink); border: 1px solid var(--line);
 }
-.btn-ghost:hover { background: var(--paper); }
-.btn-gold { background: var(--gold); color: #1c1410; }
+.btn-ghost:hover { background: var(--paper); border-color: var(--rust-deep); }
+.btn-gold {
+  background: var(--gold); color: var(--bg);
+  box-shadow: 0 1px 0 rgba(255, 240, 200, 0.4) inset, 0 6px 18px -8px rgba(233, 199, 92, 0.35);
+}
 .btn-gold:hover { background: var(--gold-soft); }
 
 .card {
@@ -90,8 +101,9 @@ body {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 6px 12px; border-radius: 999px;
   font-size: 12px; font-weight: 600;
-  background: var(--cream); color: var(--rust-deep);
-  border: 1px solid var(--gold-soft);
+  background: var(--cream); color: var(--gold);
+  border: 1px solid var(--rust-deep);
+  letter-spacing: 0.04em;
 }
 
 .divider {
@@ -102,21 +114,28 @@ body {
 
 .input {
   width: 100%; padding: 12px 14px;
-  background: var(--paper);
+  background: var(--bg-warm);
   border: 1px solid var(--line); border-radius: 12px;
   font-size: 15px; color: var(--ink);
   transition: border-color .15s ease, box-shadow .15s ease;
 }
+.input::placeholder { color: var(--ink-mute); }
 .input:focus {
   outline: none; border-color: var(--rust);
-  box-shadow: 0 0 0 4px rgba(179, 67, 26, 0.12);
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
 }
 
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(79, 93, 54, 0.4); }
-  50% { box-shadow: 0 0 0 14px rgba(79, 93, 54, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(95, 168, 80, 0.45); }
+  50% { box-shadow: 0 0 0 14px rgba(95, 168, 80, 0); }
 }
 .glow-paid { animation: pulseGlow 1.6s ease-out infinite; }
+
+@keyframes goldShimmer {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.0); }
+  50% { box-shadow: 0 0 30px 4px rgba(212, 175, 55, 0.25); }
+}
+.shimmer-gold { animation: goldShimmer 3.2s ease-in-out infinite; }
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(8px); }
@@ -124,18 +143,6 @@ body {
 }
 .fade-up { animation: fadeUp .35s ease both; }
 
-.scroll-shadow {
-  background:
-    linear-gradient(var(--bg) 30%, transparent),
-    linear-gradient(transparent, var(--bg) 70%) 0 100%,
-    radial-gradient(at top, rgba(28,20,16,.08), transparent 70%),
-    radial-gradient(at bottom, rgba(28,20,16,.08), transparent 70%) 0 100%;
-  background-repeat: no-repeat;
-  background-size: 100% 24px, 100% 24px, 100% 12px, 100% 12px;
-  background-attachment: local, local, scroll, scroll;
-}
-
-/* Tailwind v4 utility extensions */
 @layer utilities {
   .text-balance { text-wrap: balance; }
   .text-pretty { text-wrap: pretty; }

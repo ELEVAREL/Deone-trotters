@@ -40,11 +40,11 @@ export default function Home() {
             </div>
           </div>
           <div className="relative aspect-[4/5] max-w-md justify-self-center md:justify-self-end">
-            <div className="absolute inset-0 rounded-[var(--radius-lg)] overflow-hidden bg-gradient-to-br from-[color:var(--cream)] via-[color:var(--gold-soft)] to-[color:var(--rust)] shadow-[0_30px_80px_-30px_rgba(138,49,16,.45)]">
+            <div className="absolute inset-0 rounded-[var(--radius-lg)] overflow-hidden bg-gradient-to-br from-[color:var(--gold-soft)] via-[color:var(--rust)] to-[color:var(--bg-warm)] shadow-[0_30px_80px_-30px_rgba(212,175,55,.35)] shimmer-gold">
               <div className="absolute inset-0 grid place-items-center">
                 <PlateMark />
               </div>
-              <div className="absolute -bottom-2 -left-2 px-3 py-1.5 bg-[color:var(--paper)] border border-[color:var(--line)] rounded-full font-display text-sm">
+              <div className="absolute -bottom-2 -left-2 px-3 py-1.5 bg-[color:var(--paper)] border border-[color:var(--rust-deep)] rounded-full font-display text-sm text-[color:var(--gold)]">
                 ✦ Today&apos;s special
               </div>
             </div>
@@ -141,12 +141,12 @@ function Tile({ heading, sub, rust }: { heading: string; sub: string; rust?: boo
     <div
       className={`rounded-[var(--radius)] p-5 border ${
         rust
-          ? "bg-[color:var(--rust)] text-[color:var(--paper)] border-[color:var(--rust-deep)]"
-          : "bg-[color:var(--bg-warm)] border-[color:var(--line)]"
+          ? "bg-gradient-to-br from-[color:var(--gold)] to-[color:var(--rust)] text-[color:var(--bg)] border-[color:var(--rust-deep)]"
+          : "bg-[color:var(--bg-warm)] border-[color:var(--line)] text-[color:var(--ink)]"
       }`}
     >
       <div className="font-display text-xl font-semibold tracking-tight">{heading}</div>
-      <div className={`text-sm mt-1 ${rust ? "text-[color:var(--cream)]" : "text-[color:var(--ink-mute)]"}`}>
+      <div className={`text-sm mt-1 ${rust ? "text-[color:var(--bg)] opacity-75" : "text-[color:var(--ink-mute)]"}`}>
         {sub}
       </div>
     </div>
@@ -158,20 +158,24 @@ function PlateMark() {
     <svg viewBox="0 0 200 200" className="w-2/3 h-2/3" aria-hidden>
       <defs>
         <radialGradient id="plate" cx="50%" cy="40%" r="60%">
-          <stop offset="0%" stopColor="#fffaf2" />
-          <stop offset="100%" stopColor="#f3e3c2" />
+          <stop offset="0%" stopColor="#1a1510" />
+          <stop offset="100%" stopColor="#0a0806" />
         </radialGradient>
+        <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#f5dc8a" />
+          <stop offset="100%" stopColor="#b8902a" />
+        </linearGradient>
       </defs>
-      <circle cx="100" cy="100" r="92" fill="url(#plate)" stroke="#1c1410" strokeOpacity="0.08" strokeWidth="2" />
-      <circle cx="100" cy="100" r="74" fill="none" stroke="#1c1410" strokeOpacity="0.08" strokeWidth="1.5" />
+      <circle cx="100" cy="100" r="92" fill="url(#plate)" stroke="url(#rim)" strokeWidth="3" />
+      <circle cx="100" cy="100" r="74" fill="none" stroke="#d4af37" strokeOpacity="0.45" strokeWidth="1" />
       <text
         x="100"
-        y="108"
+        y="118"
         textAnchor="middle"
         fontFamily="serif"
-        fontSize="56"
-        fontWeight="700"
-        fill="#8a3110"
+        fontSize="80"
+        fontWeight="900"
+        fill="url(#rim)"
       >
         D
       </text>

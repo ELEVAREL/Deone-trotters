@@ -24,7 +24,7 @@ export function SiteHeader({ active }: { active?: "home" | "order" }) {
             href="/"
             className={`px-3 py-2 rounded-full text-sm font-medium transition ${
               active === "home"
-                ? "bg-[color:var(--cream)] text-[color:var(--rust-deep)]"
+                ? "bg-[color:var(--cream)] text-[color:var(--gold)] border border-[color:var(--rust-deep)]"
                 : "text-[color:var(--ink-soft)] hover:bg-[color:var(--paper)]"
             }`}
           >
