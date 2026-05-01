@@ -1,0 +1,22 @@
+{
+  "name": "Deone's Gourmet Trotters",
+  "short_name": "Deone's",
+  "description": "Soul food, slow-cooked, served with love.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fbf6ee",
+  "theme_color": "#b3431a",
+  "orientation": "portrait",
+  "categories": ["food", "shopping", "lifestyle"],
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Take an order",
+      "short_name": "Order pad",
+      "url": "/order",
+      "description": "Open the order pad to start a new ticket"
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+:root {
+  /* Warm soul-food palette */
+  --bg: #fbf6ee;
+  --bg-warm: #f5ead6;
+  --paper: #fffaf2;
+  --ink: #1c1410;
+  --ink-soft: #4a3a30;
+  --ink-mute: #7a6a5e;
+  --line: #e6d8c3;
+  --rust: #b3431a;
+  --rust-deep: #8a3110;
+  --gold: #c08a2e;
+  --gold-soft: #e6c97a;
+  --olive: #4f5d36;
+  --cream: #f3e3c2;
+  --shadow-warm: 0 1px 0 rgba(28, 20, 16, 0.04), 0 16px 40px -20px rgba(138, 49, 16, 0.18);
+  --radius: 14px;
+  --radius-lg: 22px;
+}
+
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-mute: var(--ink-mute);
+  --color-line: var(--line);
+  --color-rust: var(--rust);
+  --color-rust-deep: var(--rust-deep);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-olive: var(--olive);
+  --color-cream: var(--cream);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), Georgia, serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body { background: var(--bg); color: var(--ink); }
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  background-image:
+    radial-gradient(at 12% 8%, rgba(192, 138, 46, 0.08) 0, transparent 45%),
+    radial-gradient(at 88% 92%, rgba(179, 67, 26, 0.07) 0, transparent 50%);
+  min-height: 100vh;
+}
+
+.font-display { font-family: var(--font-display); font-feature-settings: "ss01", "ss02"; letter-spacing: -0.02em; }
+.font-sans { font-family: var(--font-sans); }
+
+.h-display { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.025em; line-height: 1.02; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 14px 22px;
+  font-weight: 600; font-size: 15px;
+  border-radius: 999px;
+  transition: transform .15s ease, background .2s ease, box-shadow .2s ease;
+  cursor: pointer; user-select: none;
+  white-space: nowrap;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary {
+  background: var(--rust); color: #fffaf2;
+  box-shadow: 0 1px 0 rgba(255,255,255,.2) inset, 0 8px 22px -10px rgba(138,49,16,.5);
+}
+.btn-primary:hover { background: var(--rust-deep); }
+.btn-ghost {
+  background: transparent; color: var(--ink); border: 1px solid var(--line);
+}
+.btn-ghost:hover { background: var(--paper); }
+.btn-gold { background: var(--gold); color: #1c1410; }
+.btn-gold:hover { background: var(--gold-soft); }
+
+.card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-warm);
+}
+
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 999px;
+  font-size: 12px; font-weight: 600;
+  background: var(--cream); color: var(--rust-deep);
+  border: 1px solid var(--gold-soft);
+}
+
+.divider {
+  border: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line) 20%, var(--line) 80%, transparent);
+  margin: 0;
+}
+
+.input {
+  width: 100%; padding: 12px 14px;
+  background: var(--paper);
+  border: 1px solid var(--line); border-radius: 12px;
+  font-size: 15px; color: var(--ink);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.input:focus {
+  outline: none; border-color: var(--rust);
+  box-shadow: 0 0 0 4px rgba(179, 67, 26, 0.12);
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(79, 93, 54, 0.4); }
+  50% { box-shadow: 0 0 0 14px rgba(79, 93, 54, 0); }
+}
+.glow-paid { animation: pulseGlow 1.6s ease-out infinite; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp .35s ease both; }
+
+.scroll-shadow {
+  background:
+    linear-gradient(var(--bg) 30%, transparent),
+    linear-gradient(transparent, var(--bg) 70%) 0 100%,
+    radial-gradient(at top, rgba(28,20,16,.08), transparent 70%),
+    radial-gradient(at bottom, rgba(28,20,16,.08), transparent 70%) 0 100%;
+  background-repeat: no-repeat;
+  background-size: 100% 24px, 100% 24px, 100% 12px, 100% 12px;
+  background-attachment: local, local, scroll, scroll;
+}
+
+/* Tailwind v4 utility extensions */
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
+}
