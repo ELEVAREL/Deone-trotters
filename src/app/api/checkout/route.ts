@@ -1,15 +1,15 @@
 import { NextRequest } from "next/server";
 import { getStripe, isStripeConfigured } from "@/lib/stripe";
 import { getSupabaseAdmin } from "@/lib/supabase";
-import { getBaseUrl } from "@/lib/format";
-import type { CartLine, OrderRow } from "@/lib/types";
+import type { OrderRow } from "@/lib/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// POST /api/checkout { orderId } -> creates a Stripe Checkout Session for the
-// order and returns its URL. The customer is redirected to this URL after
-// scanning the QR code on grandma's order pad.
+// POST /api/checkout { orderId } -> creates or refreshes a Stripe PaymentIntent
+// for the order and returns its clientSecret. The /pay/[id] page mounts
+// Stripe's PaymentElement against this clientSecret so the customer pays
+// inline without leaving the branded page.
 export async function POST(req: NextRequest) {
   if (!isStripeConfigured()) {
     return Response.json(
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   const supabase = getSupabaseAdmin();
   const { data: order, error } = await supabase
     .from("orders")
-    .select("id, status, amount_cents, currency, items, stripe_session_id")
+    .select("id, status, amount_cents, currency, items, stripe_payment_intent")
     .eq("id", body.orderId)
     .maybeSingle<OrderRow>();
 
@@ -46,28 +46,42 @@ export async function POST(req: NextRequest) {
   }
 
   const stripe = getStripe();
-  const baseUrl = getBaseUrl();
 
-  const session = await stripe.checkout.sessions.create({
-    mode: "payment",
-    payment_method_types: ["card"],
-    line_items: (order.items as CartLine[]).map((line) => ({
-      quantity: line.qty,
-      price_data: {
-        currency: order.currency,
-        unit_amount: line.priceCents,
-        product_data: { name: line.name },
-      },
-    })),
+  // Reuse the existing PaymentIntent if we have one (e.g. customer reloaded).
+  // This keeps the same clientSecret stable across reloads.
+  if (order.stripe_payment_intent) {
+    try {
+      const existing = await stripe.paymentIntents.retrieve(order.stripe_payment_intent);
+      if (
+        existing.status === "requires_payment_method" ||
+        existing.status === "requires_confirmation" ||
+        existing.status === "requires_action"
+      ) {
+        // If the order amount has changed since (it can't in this app, but be safe), update.
+        if (existing.amount !== order.amount_cents) {
+          await stripe.paymentIntents.update(existing.id, {
+            amount: order.amount_cents,
+          });
+        }
+        return Response.json({ clientSecret: existing.client_secret });
+      }
+    } catch {
+      // fall through to create a new one
+    }
+  }
+
+  const intent = await stripe.paymentIntents.create({
+    amount: order.amount_cents,
+    currency: order.currency,
+    automatic_payment_methods: { enabled: true },
     metadata: { order_id: order.id },
-    success_url: `${baseUrl}/success?order=${order.id}`,
-    cancel_url: `${baseUrl}/pay/${order.id}?cancelled=1`,
+    description: `Deone's Gourmet Trotters · order ${order.id.slice(0, 8)}`,
   });
 
   await supabase
     .from("orders")
-    .update({ stripe_session_id: session.id })
+    .update({ stripe_payment_intent: intent.id })
     .eq("id", order.id);
 
-  return Response.json({ url: session.url, id: session.id });
+  return Response.json({ clientSecret: intent.client_secret });
 }

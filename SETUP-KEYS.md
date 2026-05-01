@@ -47,7 +47,7 @@ read and write orders.
 2. Click **+ Add endpoint**.
 3. Endpoint URL: `https://YOUR-DOMAIN/api/webhook`
    - Replace `YOUR-DOMAIN` with the production URL Vercel gave you.
-4. Events to send: select **`checkout.session.completed`** and **`checkout.session.expired`**.
+4. Events to send: select **`payment_intent.succeeded`** and **`payment_intent.payment_failed`**.
 5. Click **Add endpoint**, then on the new endpoint page click **Reveal** under
    **Signing secret** and copy the value (starts with `whsec_...`).
 6. Add to Vercel:
@@ -58,7 +58,19 @@ read and write orders.
 
 ---
 
-## 4. Redeploy
+## 4. (Optional) Apple Pay domain verification
+
+Apple Pay shows up automatically inside the in-app payment form on iPhones —
+once the domain is registered with Apple via Stripe.
+
+1. Open <https://dashboard.stripe.com/settings/payment_method_domains>.
+2. Click **Add a new domain** → enter your production domain.
+3. Stripe handles the file hosting; just click **Verify**. Done in 30 seconds.
+
+Skip this and customers see card / Google Pay / Link only. Apple Pay just
+won't appear.
+
+## 5. Redeploy
 
 After adding env vars, in Vercel hit **Deployments → ⋯ → Redeploy** on the
 latest deploy so the new keys take effect. Done.
@@ -69,10 +81,11 @@ latest deploy so the new keys take effect. Done.
 
 1. Open `https://YOUR-DOMAIN/order` on the tablet/phone grandma will use.
 2. Tap a few items → **Generate QR to pay**.
-3. Scan the QR with another phone → pay with `4242 4242 4242 4242` (test mode)
-   or a real card (live mode).
-4. The QR screen flips to a green ✓ within a few seconds — that's the webhook
-   firing and the order pad polling Supabase.
+3. Scan the QR with another phone → land on the branded pay page (no Stripe
+   redirect — they pay inline). Use `4242 4242 4242 4242` for test mode, or a
+   real card / Apple Pay / Google Pay in live mode.
+4. The QR screen flips to a green ✓ within a few seconds — webhook fires,
+   the order pad polling sees `status='paid'`, screen flashes "Paid."
 
 If the green ✓ doesn't appear, check **Stripe → Webhooks → your endpoint →
 Recent deliveries** for errors, and **Vercel → Logs** for `/api/webhook`.
