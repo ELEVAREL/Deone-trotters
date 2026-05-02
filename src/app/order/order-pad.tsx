@@ -6,6 +6,8 @@ import type { MenuItem, OrderStatus } from "@/lib/types";
 import { formatPrice } from "@/lib/format";
 import { BUSINESS } from "@/lib/menu";
 import { MenuManager } from "./menu-manager";
+import { OrderHistory } from "./order-history";
+import { InvoiceModal, InvoiceSentToast } from "./invoice-modal";
 
 type Cart = Record<string, number>;
 
@@ -28,6 +30,12 @@ export function OrderPad({ menu }: { menu: MenuItem[] }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showMenuManager, setShowMenuManager] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [showInvoice, setShowInvoice] = useState(false);
+  const [invoiceSent, setInvoiceSent] = useState<{
+    email: string;
+    payUrl: string;
+  } | null>(null);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
   const lines = useMemo(
@@ -159,7 +167,21 @@ export function OrderPad({ menu }: { menu: MenuItem[] }) {
             </div>
           </div>
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 flex-wrap justify-end">
+          <button
+            onClick={() => setShowHistory(true)}
+            className="btn btn-ghost !py-2 !px-3 !text-xs hover:!border-[color:var(--rust-deep)] hover:!text-[color:var(--gold)]"
+            aria-label="Order history"
+          >
+            History
+          </button>
+          <button
+            onClick={() => setShowInvoice(true)}
+            className="btn btn-ghost !py-2 !px-3 !text-xs hover:!border-[color:var(--rust-deep)] hover:!text-[color:var(--gold)]"
+            aria-label="Send phone-order invoice"
+          >
+            Send invoice
+          </button>
           <button
             onClick={() => setShowMenuManager(true)}
             className="btn btn-ghost !py-2 !px-3 !text-xs hover:!border-[color:var(--rust-deep)] hover:!text-[color:var(--gold)]"
@@ -189,6 +211,30 @@ export function OrderPad({ menu }: { menu: MenuItem[] }) {
 
       {showMenuManager && (
         <MenuManager onClose={() => setShowMenuManager(false)} />
+      )}
+      {showHistory && (
+        <OrderHistory onClose={() => setShowHistory(false)} />
+      )}
+      {showInvoice && (
+        <InvoiceModal
+          menu={menu}
+          initialCart={cart}
+          initialNotes={notes}
+          onClose={() => setShowInvoice(false)}
+          onSent={({ email, payUrl }) => {
+            setShowInvoice(false);
+            setInvoiceSent({ email, payUrl });
+            // Don't clear the cart — she might be sending one invoice for one
+            // customer while still serving someone in person.
+          }}
+        />
+      )}
+      {invoiceSent && (
+        <InvoiceSentToast
+          email={invoiceSent.email}
+          payUrl={invoiceSent.payUrl}
+          onClose={() => setInvoiceSent(null)}
+        />
       )}
 
       <div className="flex-1 grid lg:grid-cols-[1fr_400px] gap-0">

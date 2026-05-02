@@ -1,10 +1,39 @@
 import { NextRequest } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { listMenuItemsAdmin } from "@/lib/menu-db";
+import { isOrderPadAuthed } from "@/lib/order-pad-auth";
 import type { CartLine } from "@/lib/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+// GET /api/orders — staff-only list of recent orders for the order pad's
+// History view. Supports ?status=pending|paid|all (default 'all') and
+// ?limit=1..200 (default 50).
+export async function GET(req: NextRequest) {
+  if (!(await isOrderPadAuthed())) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const supabase = getSupabaseAdmin();
+  const url = new URL(req.url);
+  const status = url.searchParams.get("status") ?? "all";
+  const limit = Math.min(200, Math.max(1, Number(url.searchParams.get("limit") ?? "50")));
+
+  let query = supabase
+    .from("orders")
+    .select(
+      "id, status, amount_cents, currency, items, notes, customer_name, customer_phone, customer_email, pickup_at, order_type, created_at, paid_at"
+    )
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (status === "pending") query = query.in("status", ["pending"]);
+  else if (status === "paid") query = query.eq("status", "paid");
+
+  const { data, error } = await query;
+  if (error) return Response.json({ error: error.message }, { status: 500 });
+  return Response.json(data, { headers: { "Cache-Control": "no-store" } });
+}
 
 type CreateBody = {
   items: Array<{ id: string; qty: number }>;
