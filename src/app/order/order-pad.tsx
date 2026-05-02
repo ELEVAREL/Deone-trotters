@@ -5,6 +5,7 @@ import QRCode from "qrcode";
 import type { MenuItem, OrderStatus } from "@/lib/types";
 import { formatPrice } from "@/lib/format";
 import { BUSINESS } from "@/lib/menu";
+import { MenuManager } from "./menu-manager";
 
 type Cart = Record<string, number>;
 
@@ -26,6 +27,7 @@ export function OrderPad({ menu }: { menu: MenuItem[] }) {
   const [status, setStatus] = useState<OrderStatus>("pending");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showMenuManager, setShowMenuManager] = useState(false);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
   const lines = useMemo(
@@ -147,7 +149,7 @@ export function OrderPad({ menu }: { menu: MenuItem[] }) {
     <main className="min-h-screen flex flex-col">
       <header className="px-5 sm:px-8 py-4 border-b border-[color:var(--line)] flex items-center justify-between gap-3 bg-[color:var(--paper)]">
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-[color:var(--rust)] grid place-items-center text-[color:var(--paper)] font-display font-bold">
+          <div className="w-8 h-8 rounded-full bg-[color:var(--rust)] grid place-items-center text-[color:var(--bg)] font-display font-bold">
             D
           </div>
           <div className="leading-tight">
@@ -157,14 +159,37 @@ export function OrderPad({ menu }: { menu: MenuItem[] }) {
             </div>
           </div>
         </Link>
-        <button
-          onClick={clear}
-          disabled={itemCount === 0}
-          className="btn btn-ghost !py-2 !px-3 !text-xs disabled:opacity-40"
-        >
-          Clear
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowMenuManager(true)}
+            className="btn btn-ghost !py-2 !px-3 !text-xs hover:!border-[color:var(--rust-deep)] hover:!text-[color:var(--gold)]"
+            aria-label="Edit menu"
+          >
+            Edit menu
+          </button>
+          <button
+            onClick={clear}
+            disabled={itemCount === 0}
+            className="btn btn-ghost !py-2 !px-3 !text-xs disabled:opacity-40"
+          >
+            Clear
+          </button>
+          <button
+            onClick={async () => {
+              await fetch("/api/order-pad/auth", { method: "DELETE" });
+              window.location.reload();
+            }}
+            className="text-[10px] uppercase tracking-[0.2em] text-[color:var(--ink-mute)] hover:text-[color:var(--gold)] transition px-2"
+            title="Sign out of the order pad"
+          >
+            Lock
+          </button>
+        </div>
       </header>
+
+      {showMenuManager && (
+        <MenuManager onClose={() => setShowMenuManager(false)} />
+      )}
 
       <div className="flex-1 grid lg:grid-cols-[1fr_400px] gap-0">
         {/* Menu pad */}
@@ -404,7 +429,7 @@ function QRView({
           <div className="text-[10px] uppercase tracking-[0.3em] text-[color:var(--rust)] font-semibold">
             Total Due
           </div>
-          <div className="font-display text-6xl font-bold mt-2 gilt italic leading-none">
+          <div className="font-display text-6xl font-bold mt-2 gilt italic">
             {formatPrice(total)}
           </div>
         </div>

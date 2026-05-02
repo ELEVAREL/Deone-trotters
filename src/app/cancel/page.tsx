@@ -8,8 +8,7 @@ export default function CancelPage() {
       <div className="card p-10 text-center max-w-md w-full">
         <h1 className="h-display text-3xl">No worries</h1>
         <p className="mt-3 text-[color:var(--ink-mute)]">
-          Your card wasn&apos;t charged. Have grandma scan a fresh QR when you&apos;re
-          ready.
+          Your card wasn&apos;t charged. Scan a fresh QR when you&apos;re ready.
         </p>
         <Link href="/" className="btn btn-ghost mt-6">Back home</Link>
       </div>

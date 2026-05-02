@@ -128,8 +128,8 @@ export default async function PayPage({
               <span className="gilt">Pay the bill</span>
             </h1>
             <p className="mt-3 text-[color:var(--ink-mute)] text-sm leading-relaxed">
-              Scanned from the counter. Card, Apple Pay, Google Pay all work
-              here. The kitchen sees a green light the moment it clears.
+              Pay here. Card, Apple Pay, or Google Pay. The kitchen lights up
+              green the second your card clears.
             </p>
           </div>
 
@@ -165,7 +165,7 @@ export default async function PayPage({
             <hr className="divider my-5" />
             <div className="flex items-end justify-between">
               <span className="text-[color:var(--ink-mute)] text-sm">Total</span>
-              <span className="font-display text-3xl font-bold gilt italic leading-none">
+              <span className="font-display text-3xl font-bold gilt italic">
                 {formatPrice(order.amount_cents, order.currency)}
               </span>
             </div>

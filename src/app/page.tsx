@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { MENU, BUSINESS } from "@/lib/menu";
+import { BUSINESS } from "@/lib/menu";
+import { listMenuItemsPublic } from "@/lib/menu-db";
 import { formatPrice } from "@/lib/format";
+
+export const dynamic = "force-dynamic";
 
 const CATEGORIES: Array<{ key: "mains" | "sides" | "drinks" | "desserts"; label: string }> = [
   { key: "mains", label: "From the Kitchen" },
@@ -11,7 +14,8 @@ const CATEGORIES: Array<{ key: "mains" | "sides" | "drinks" | "desserts"; label:
   { key: "desserts", label: "Desserts" },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const MENU = await listMenuItemsPublic();
   return (
     <main className="min-h-screen flex flex-col">
       <SiteHeader active="home" />
@@ -20,7 +24,7 @@ export default function Home() {
       <section className="relative overflow-hidden">
         <div className="mx-auto max-w-6xl px-5 sm:px-8 pt-16 sm:pt-24 pb-14 sm:pb-20 grid md:grid-cols-[1.1fr_1fr] gap-10 items-center">
           <div>
-            <span className="chip hero-rise hero-rise-1">Est. by Deone · Family kitchen</span>
+            <span className="chip hero-rise hero-rise-1">Family kitchen · Three generations</span>
             <h1 className="h-display text-[clamp(2.75rem,7.5vw,5.5rem)] mt-6 text-balance hero-rise hero-rise-2">
               Slow food,
               <br />
@@ -31,7 +35,7 @@ export default function Home() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3 hero-rise hero-rise-4">
               <Link href="#menu" className="btn btn-primary">See the menu →</Link>
-              <Link href="/order" className="btn btn-ghost">Order at the counter</Link>
+              <a href={`tel:${BUSINESS.phone}`} className="btn btn-ghost">Call ahead</a>
             </div>
             <div className="mt-12 flex flex-wrap gap-x-10 gap-y-4 text-sm text-[color:var(--ink-mute)] hero-rise hero-rise-5">
               <Stat n="3" label="Generations of recipes" />
@@ -105,7 +109,7 @@ export default function Home() {
                         </p>
                       </div>
                       <div className="text-right shrink-0">
-                        <div className="font-display text-2xl text-[color:var(--gold)] font-bold whitespace-nowrap leading-none">
+                        <div className="font-display text-2xl text-[color:var(--gold)] font-bold whitespace-nowrap leading-tight">
                           {formatPrice(item.priceCents)}
                         </div>
                         <div className="text-[10px] uppercase tracking-[0.18em] text-[color:var(--ink-mute)] mt-1.5">

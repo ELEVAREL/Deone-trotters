@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase";
-import { MENU } from "@/lib/menu";
+import { listMenuItemsAdmin } from "@/lib/menu-db";
 import type { CartLine } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -25,12 +25,13 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "Cart is empty" }, { status: 400 });
   }
 
+  const menu = await listMenuItemsAdmin();
   const lines: CartLine[] = [];
   let amount = 0;
   for (const raw of body.items) {
-    const menuItem = MENU.find((m) => m.id === raw.id);
-    if (!menuItem) {
-      return Response.json({ error: `Unknown item: ${raw.id}` }, { status: 400 });
+    const menuItem = menu.find((m) => m.id === raw.id);
+    if (!menuItem || !menuItem.available) {
+      return Response.json({ error: `Unknown or unavailable item: ${raw.id}` }, { status: 400 });
     }
     const qty = Math.max(1, Math.min(99, Math.floor(raw.qty)));
     lines.push({

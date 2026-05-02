@@ -21,7 +21,7 @@ export function SiteHeader({ active }: { active?: "home" | "order" }) {
         </Link>
         <nav className="flex items-center gap-1">
           <Link
-            href="/"
+            href="/#menu"
             className={`px-3 py-2 rounded-full text-sm font-medium transition ${
               active === "home"
                 ? "bg-[color:var(--cream)] text-[color:var(--gold)] border border-[color:var(--rust-deep)]"

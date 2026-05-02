@@ -229,13 +229,22 @@ body > * { position: relative; z-index: 2; }
 }
 .plate-float { animation: plateFloat 7s ease-in-out infinite; }
 
-/* Gold gilt text effect for special headings */
-.gilt {
-  background: linear-gradient(180deg, var(--gold-soft) 0%, var(--rust) 50%, var(--rust-deep) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+/* Gold gilt text effect — declared in @layer utilities so it beats
+   Tailwind's leading-* utilities at the same specificity. */
+@layer utilities {
+  .gilt {
+    background: linear-gradient(180deg, var(--gold-soft) 0%, var(--rust) 50%, var(--rust-deep) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    /* Italic descenders ('y', 'g', 'p') and italic right-leaning ends (final 'd', 'l')
+       clip when background-clip:text meets a tight line-box. Generous padding +
+       line-height keeps every shape inside the box. */
+    display: inline-block;
+    padding: 0.08em 0.22em 0.28em 0.04em;
+    line-height: 1.24;
+    letter-spacing: -0.005em;
+  }
 }
 
 @layer utilities {
