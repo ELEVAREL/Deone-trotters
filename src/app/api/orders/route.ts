@@ -2,7 +2,8 @@ import { NextRequest } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { listMenuItemsAdmin } from "@/lib/menu-db";
 import { isOrderPadAuthed } from "@/lib/order-pad-auth";
-import type { CartLine } from "@/lib/types";
+import { notifyAdmins } from "@/lib/email-notify";
+import type { CartLine, OrderRow } from "@/lib/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -126,12 +127,20 @@ export async function POST(req: NextRequest) {
       customer_email: body.customerEmail?.trim() || null,
       pickup_at: pickupAt,
     })
-    .select("id")
-    .single();
+    .select(
+      "id, amount_cents, items, customer_name, customer_email, customer_phone, pickup_at, notes, order_type, status, paid_at, created_at"
+    )
+    .single<OrderRow>();
 
   if (error || !data) {
     console.error("orders.insert error", error);
     return Response.json({ error: "Failed to create order" }, { status: 500 });
+  }
+
+  // Public pre-orders go to admins right away. In-person orders skip the
+  // notification (grandma already knows — she just rang it up).
+  if (orderType === "preorder") {
+    void notifyAdmins("new_preorder", data);
   }
 
   return Response.json({ id: data.id, amount_cents: amount });

@@ -3,8 +3,10 @@ import { getSupabaseAdmin } from "@/lib/supabase";
 import { listMenuItemsAdmin } from "@/lib/menu-db";
 import { isOrderPadAuthed } from "@/lib/order-pad-auth";
 import { getResend, isResendConfigured, getResendFrom } from "@/lib/resend";
+import { buildCustomerInvoiceEmail } from "@/lib/email-templates";
+import { notifyAdmins } from "@/lib/email-notify";
 import { getBaseUrl } from "@/lib/format";
-import type { CartLine } from "@/lib/types";
+import type { CartLine, OrderRow } from "@/lib/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -91,108 +93,40 @@ export async function POST(req: NextRequest) {
       customer_email: email,
       pickup_at: pickupAt,
     })
-    .select("id")
-    .single();
+    .select(
+      "id, amount_cents, items, customer_name, customer_email, customer_phone, pickup_at, notes, order_type, status, paid_at, created_at"
+    )
+    .single<OrderRow>();
   if (error || !order) {
     console.error("invoice insert error", error);
     return Response.json({ error: "Failed to create order" }, { status: 500 });
   }
 
   const payUrl = `${getBaseUrl()}/pay/${order.id}`;
-  const totalUsd = (amount / 100).toLocaleString("en-US", {
-    style: "currency",
-    currency: "USD",
-  });
 
-  // Send the email.
+  // Send the customer-facing invoice.
   try {
+    const { subject, html, text } = buildCustomerInvoiceEmail({
+      order: {
+        id: order.id,
+        amount_cents: order.amount_cents,
+        items: lines,
+        customer_name: order.customer_name,
+        pickup_at: order.pickup_at,
+        notes: order.notes,
+      },
+      payUrl,
+    });
     const resend = getResend();
-    const itemsHtml = lines
-      .map(
-        (l) => `
-        <tr>
-          <td style="padding:8px 0;border-bottom:1px solid #2e2618;color:#f4e7c0">
-            <div style="font-weight:600">${escapeHtml(l.name)}</div>
-            <div style="font-size:12px;color:#8a7a5a">${l.qty} × ${(l.priceCents / 100).toFixed(2)}</div>
-          </td>
-          <td style="padding:8px 0;border-bottom:1px solid #2e2618;color:#e9c75c;text-align:right;font-weight:700">
-            $${((l.priceCents * l.qty) / 100).toFixed(2)}
-          </td>
-        </tr>`
-      )
-      .join("");
-
-    const pickupLine = pickupAt
-      ? `<p style="margin:12px 0 0;color:#c9b88a;font-size:14px">Pickup: <strong style="color:#e9c75c">${new Date(pickupAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}</strong></p>`
-      : "";
-
-    const html = `<!doctype html>
-<html><body style="margin:0;padding:0;background:#0a0806;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#f4e7c0">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0a0806">
-    <tr><td align="center" style="padding:32px 16px">
-      <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#1a1510;border:1px solid #2e2618;border-radius:14px;overflow:hidden">
-        <tr><td style="padding:28px 32px;border-bottom:1px solid #2e2618;text-align:center">
-          <div style="display:inline-block;width:44px;height:44px;border-radius:50%;background:#d4af37;color:#0a0806;line-height:44px;font-family:Georgia,serif;font-weight:900;font-size:22px;margin-bottom:8px">D</div>
-          <div style="font-family:Georgia,serif;font-size:20px;font-weight:700;color:#f4e7c0">Deone's Gourmet Trotters</div>
-          <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8a7a5a;margin-top:4px">Your invoice is ready</div>
-        </td></tr>
-        <tr><td style="padding:28px 32px">
-          <p style="margin:0 0 16px;color:#f4e7c0;font-size:16px">Hi ${escapeHtml(name)},</p>
-          <p style="margin:0 0 20px;color:#c9b88a;font-size:15px;line-height:1.55">
-            Here's your invoice from Deone. Tap the button below to pay — it stays on our site, card or Apple/Google Pay.
-          </p>
-          <table width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 20px">
-            ${itemsHtml}
-            <tr>
-              <td style="padding:14px 0 0;color:#8a7a5a;font-size:12px;text-transform:uppercase;letter-spacing:0.18em">Total</td>
-              <td style="padding:14px 0 0;text-align:right;font-family:Georgia,serif;font-style:italic;font-size:24px;font-weight:700;color:#e9c75c">${totalUsd}</td>
-            </tr>
-          </table>
-          ${pickupLine}
-          <table width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0 8px"><tr><td align="center">
-            <a href="${payUrl}" style="display:inline-block;padding:14px 28px;background:linear-gradient(180deg,#e9c75c,#d4af37 60%,#b8902a);color:#0a0806;text-decoration:none;border-radius:999px;font-weight:700;font-size:15px">
-              Pay ${totalUsd}
-            </a>
-          </td></tr></table>
-          <p style="margin:18px 0 0;color:#8a7a5a;font-size:12px;text-align:center">
-            Or paste this link in your browser:<br>
-            <span style="color:#c9b88a;word-break:break-all">${payUrl}</span>
-          </p>
-        </td></tr>
-        <tr><td style="padding:18px 32px;border-top:1px solid #2e2618;text-align:center;color:#8a7a5a;font-size:11px;letter-spacing:0.1em">
-          Slow food · served loud. · Order #${order.id.slice(0, 8)}
-        </td></tr>
-      </table>
-    </td></tr>
-  </table>
-</body></html>`;
-
-    const subject = `Your invoice from Deone's Gourmet Trotters · ${totalUsd}`;
     const result = await resend.emails.send({
       from: getResendFrom(),
       to: email,
       subject,
       html,
-      text: [
-        `Hi ${name},`,
-        ``,
-        `Your invoice from Deone's Gourmet Trotters.`,
-        ``,
-        ...lines.map((l) => `${l.qty} × ${l.name} — $${((l.priceCents * l.qty) / 100).toFixed(2)}`),
-        ``,
-        `Total: ${totalUsd}`,
-        ...(pickupAt
-          ? [`Pickup: ${new Date(pickupAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}`]
-          : []),
-        ``,
-        `Pay here: ${payUrl}`,
-        ``,
-        `Order #${order.id.slice(0, 8)}`,
-      ].join("\n"),
+      text,
     });
-
     if (result.error) {
-      console.error("Resend error", result.error);
+      console.error("Resend customer invoice error", result.error);
       return Response.json(
         { error: `Email failed: ${result.error.message ?? "unknown"}` },
         { status: 502 }
@@ -203,18 +137,12 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "Email failed" }, { status: 500 });
   }
 
+  // Fire-and-forget admin notification — never blocks or fails the response.
+  void notifyAdmins("invoice_sent", order);
+
   return Response.json({
     id: order.id,
     payUrl,
     amountCents: amount,
   });
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 }
