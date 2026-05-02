@@ -52,7 +52,7 @@ export default async function Home() {
                 Tonight
               </div>
               <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[color:var(--paper)] border border-[color:var(--rust-deep)] rounded-full font-display text-sm text-[color:var(--gold)] shadow-[0_8px_24px_-8px_rgba(212,175,55,.4)]">
-                ✦  Sunday Oxtail  ✦
+                ✦  Splits · $25  ✦
               </div>
             </div>
           </div>
