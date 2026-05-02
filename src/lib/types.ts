@@ -26,7 +26,10 @@ export type OrderRow = {
   items: CartLine[];
   customer_email: string | null;
   customer_name: string | null;
+  customer_phone: string | null;
   notes: string | null;
+  pickup_at: string | null;
+  order_type: "in_person" | "preorder";
   stripe_session_id: string | null;
   stripe_payment_intent: string | null;
 };

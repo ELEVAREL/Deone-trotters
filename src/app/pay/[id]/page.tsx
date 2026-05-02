@@ -61,7 +61,7 @@ export default async function PayPage({
   const { data: order } = await supabase
     .from("orders")
     .select(
-      "id, status, amount_cents, currency, items, notes, paid_at, created_at, stripe_payment_intent"
+      "id, status, amount_cents, currency, items, notes, paid_at, created_at, stripe_payment_intent, customer_name, customer_phone, pickup_at, order_type"
     )
     .eq("id", id)
     .maybeSingle<OrderRow>();
@@ -75,12 +75,23 @@ export default async function PayPage({
           <div className="w-14 h-14 rounded-full bg-[color:var(--olive)] text-[color:var(--bg)] grid place-items-center mx-auto mb-4 text-2xl font-bold">
             ✓
           </div>
-          <h1 className="font-display text-3xl font-bold tracking-tight italic gilt">
-            Already paid
+          <h1 className="font-display text-3xl font-bold tracking-tight italic">
+            <span className="gilt">Already paid</span>
           </h1>
           <p className="mt-2 text-[color:var(--ink-mute)]">
             This order is settled. Thank you.
           </p>
+          {order.order_type === "preorder" && order.pickup_at && (
+            <p className="mt-3 text-sm text-[color:var(--ink)]">
+              Pickup{" "}
+              <span className="font-display font-semibold text-[color:var(--gold)]">
+                {new Date(order.pickup_at).toLocaleString([], {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })}
+              </span>
+            </p>
+          )}
           <Link href="/" className="btn btn-ghost mt-6">
             Back home
           </Link>
@@ -132,6 +143,29 @@ export default async function PayPage({
               green the second your card clears.
             </p>
           </div>
+
+          {order.order_type === "preorder" && (
+            <div className="mb-4 p-4 rounded-xl bg-[color:var(--cream)] border border-[color:var(--rust-deep)] flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[color:var(--rust)] grid place-items-center text-[color:var(--bg)] text-lg shrink-0">
+                ↗
+              </div>
+              <div className="text-sm leading-tight">
+                <div className="text-[10px] uppercase tracking-[0.2em] text-[color:var(--gold)] font-semibold">
+                  Pickup
+                </div>
+                <div className="text-[color:var(--ink)] font-medium mt-0.5">
+                  {order.pickup_at
+                    ? `${new Date(order.pickup_at).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}`
+                    : "As soon as ready"}
+                </div>
+                {order.customer_name && (
+                  <div className="text-[color:var(--ink-mute)] text-xs mt-0.5">
+                    Under {order.customer_name}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           <div className="card p-5 sm:p-6">
             <ul className="divide-y divide-[color:var(--line)]">

@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { BUSINESS } from "@/lib/menu";
 
-export function SiteHeader({ active }: { active?: "home" | "order" }) {
+export function SiteHeader({ active }: { active?: "home" | "preorder" }) {
   return (
     <header className="sticky top-0 z-30 backdrop-blur bg-[color:var(--bg)]/85 border-b border-[color:var(--line)]">
       <div className="mx-auto max-w-6xl px-5 sm:px-8 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-full bg-[color:var(--rust)] grid place-items-center text-[color:var(--paper)] font-display text-lg leading-none shadow-md">
+          <div className="w-9 h-9 rounded-full bg-[color:var(--rust)] grid place-items-center text-[color:var(--bg)] font-display text-lg leading-none shadow-md">
             D
           </div>
           <div className="leading-tight">
@@ -30,8 +30,15 @@ export function SiteHeader({ active }: { active?: "home" | "order" }) {
           >
             Menu
           </Link>
-          <Link href="/order" className="btn btn-primary !py-2.5 !px-4 !text-sm">
-            Take Order
+          <Link
+            href="/preorder"
+            className={
+              active === "preorder"
+                ? "btn btn-gold !py-2.5 !px-4 !text-sm"
+                : "btn btn-primary !py-2.5 !px-4 !text-sm"
+            }
+          >
+            Pre-order
           </Link>
         </nav>
       </div>

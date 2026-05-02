@@ -34,8 +34,8 @@ export default async function Home() {
               {BUSINESS.story}
             </p>
             <div className="mt-8 flex flex-wrap gap-3 hero-rise hero-rise-4">
-              <Link href="#menu" className="btn btn-primary">See the menu →</Link>
-              <a href={`tel:${BUSINESS.phone}`} className="btn btn-ghost">Call ahead</a>
+              <Link href="/preorder" className="btn btn-primary">Pre-order pickup →</Link>
+              <Link href="#menu" className="btn btn-ghost">See the menu</Link>
             </div>
             <div className="mt-12 flex flex-wrap gap-x-10 gap-y-4 text-sm text-[color:var(--ink-mute)] hero-rise hero-rise-5">
               <Stat n="3" label="Generations of recipes" />

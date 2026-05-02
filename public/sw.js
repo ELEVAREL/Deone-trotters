@@ -1,5 +1,5 @@
 // Minimal PWA service worker — caches the app shell, network-first for everything else.
-const CACHE = "deones-shell-v5-pinned";
+const CACHE = "deones-shell-v6-preorder";
 const SHELL = ["/", "/order", "/manifest.webmanifest", "/icon.svg"];
 
 self.addEventListener("install", (event) => {
