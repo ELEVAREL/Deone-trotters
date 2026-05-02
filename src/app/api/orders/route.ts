@@ -8,28 +8,43 @@ import type { CartLine, OrderRow } from "@/lib/types";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// GET /api/orders — staff-only list of recent orders for the order pad's
-// History view. Supports ?status=pending|paid|all (default 'all') and
-// ?limit=1..200 (default 50).
+// GET /api/orders — staff-only list of recent orders for the order pad.
+// Filters via ?status=
+//   - 'live'     paid + not yet completed (the live work queue)  [DEFAULT]
+//   - 'paid'     all paid orders, including completed ones
+//   - 'pending'  pending only (rare — kept for debugging)
+//   - 'all'      everything
+// Plus ?limit=1..200 (default 100).
 export async function GET(req: NextRequest) {
   if (!(await isOrderPadAuthed())) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
   const supabase = getSupabaseAdmin();
   const url = new URL(req.url);
-  const status = url.searchParams.get("status") ?? "all";
-  const limit = Math.min(200, Math.max(1, Number(url.searchParams.get("limit") ?? "50")));
+  const status = url.searchParams.get("status") ?? "live";
+  const limit = Math.min(200, Math.max(1, Number(url.searchParams.get("limit") ?? "100")));
 
   let query = supabase
     .from("orders")
     .select(
-      "id, status, amount_cents, currency, items, notes, customer_name, customer_phone, customer_email, pickup_at, order_type, created_at, paid_at"
+      "id, status, amount_cents, currency, items, notes, customer_name, customer_phone, customer_email, pickup_at, order_type, created_at, paid_at, completed_at"
     )
-    .order("created_at", { ascending: false })
     .limit(limit);
 
-  if (status === "pending") query = query.in("status", ["pending"]);
-  else if (status === "paid") query = query.eq("status", "paid");
+  if (status === "live") {
+    // Paid, not yet completed — what grandma is currently working on.
+    // Sort oldest paid first so she works through the queue in order.
+    query = query
+      .eq("status", "paid")
+      .is("completed_at", null)
+      .order("paid_at", { ascending: true });
+  } else if (status === "paid") {
+    query = query.eq("status", "paid").order("created_at", { ascending: false });
+  } else if (status === "pending") {
+    query = query.eq("status", "pending").order("created_at", { ascending: false });
+  } else {
+    query = query.order("created_at", { ascending: false });
+  }
 
   const { data, error } = await query;
   if (error) return Response.json({ error: error.message }, { status: 500 });

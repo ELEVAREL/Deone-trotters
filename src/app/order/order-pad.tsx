@@ -8,6 +8,7 @@ import { BUSINESS } from "@/lib/menu";
 import { MenuManager } from "./menu-manager";
 import { OrderHistory } from "./order-history";
 import { InvoiceModal, InvoiceSentToast } from "./invoice-modal";
+import { OrderQueue } from "./order-queue";
 
 type Cart = Record<string, number>;
 
@@ -22,7 +23,7 @@ export function OrderPad({ menu }: { menu: MenuItem[] }) {
   const [cart, setCart] = useState<Cart>({});
   const [notes, setNotes] = useState("");
   const [activeCat, setActiveCat] = useState<MenuItem["category"]>("mains");
-  const [view, setView] = useState<"build" | "qr">("build");
+  const [view, setView] = useState<"queue" | "build" | "qr">("queue");
   const [orderId, setOrderId] = useState<string | null>(null);
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [payUrl, setPayUrl] = useState<string | null>(null);
@@ -131,13 +132,16 @@ export function OrderPad({ menu }: { menu: MenuItem[] }) {
   }, [view, orderId, status]);
 
   function newOrder() {
+    // After a QR is done (paid or cancelled), grandma returns to the live
+    // queue — that's home. She can tap "+ Take new order" from there to go
+    // back to the cart builder.
     setCart({});
     setNotes("");
     setOrderId(null);
     setPayUrl(null);
     setQrDataUrl(null);
     setStatus("pending");
-    setView("build");
+    setView("queue");
   }
 
   if (view === "qr" && qrDataUrl && payUrl) {
@@ -148,7 +152,7 @@ export function OrderPad({ menu }: { menu: MenuItem[] }) {
         total={total}
         status={status}
         onNew={newOrder}
-        onBack={() => setView("build")}
+        onBack={() => setView(orderId ? "build" : "queue")}
       />
     );
   }
@@ -156,17 +160,29 @@ export function OrderPad({ menu }: { menu: MenuItem[] }) {
   return (
     <main className="min-h-screen flex flex-col">
       <header className="px-5 sm:px-8 py-4 border-b border-[color:var(--line)] flex items-center justify-between gap-3 bg-[color:var(--paper)]">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-[color:var(--rust)] grid place-items-center text-[color:var(--bg)] font-display font-bold">
-            D
-          </div>
-          <div className="leading-tight">
-            <div className="font-display text-base font-bold">{BUSINESS.name}</div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-[color:var(--ink-mute)]">
-              Order pad
+        <div className="flex items-center gap-2">
+          {view === "build" && (
+            <button
+              onClick={() => setView("queue")}
+              className="text-[color:var(--ink-mute)] hover:text-[color:var(--gold)] text-sm pr-1"
+              aria-label="Back to live orders"
+              title="Back to live orders"
+            >
+              ←
+            </button>
+          )}
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-[color:var(--rust)] grid place-items-center text-[color:var(--bg)] font-display font-bold">
+              D
             </div>
-          </div>
-        </Link>
+            <div className="leading-tight">
+              <div className="font-display text-base font-bold">{BUSINESS.name}</div>
+              <div className="text-[10px] uppercase tracking-[0.18em] text-[color:var(--ink-mute)]">
+                {view === "queue" ? "Live orders" : "Take order"}
+              </div>
+            </div>
+          </Link>
+        </div>
         <div className="flex items-center gap-1.5 flex-wrap justify-end">
           <button
             onClick={() => setShowHistory(true)}
@@ -237,6 +253,10 @@ export function OrderPad({ menu }: { menu: MenuItem[] }) {
         />
       )}
 
+      {view === "queue" ? (
+        <OrderQueue onTakeOrder={() => setView("build")} />
+      ) : (
+      <>
       <div className="flex-1 grid lg:grid-cols-[1fr_400px] gap-0">
         {/* Menu pad */}
         <section className="px-5 sm:px-8 py-6 lg:overflow-y-auto pb-32 lg:pb-6">
@@ -418,6 +438,8 @@ export function OrderPad({ menu }: { menu: MenuItem[] }) {
             </button>
           </div>
         </div>
+      )}
+      </>
       )}
     </main>
   );

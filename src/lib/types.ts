@@ -30,6 +30,7 @@ export type OrderRow = {
   notes: string | null;
   pickup_at: string | null;
   order_type: "in_person" | "preorder";
+  completed_at: string | null;
   stripe_session_id: string | null;
   stripe_payment_intent: string | null;
 };
