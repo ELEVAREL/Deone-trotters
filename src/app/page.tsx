@@ -22,7 +22,7 @@ export default async function Home() {
       {/* Title */}
       <section className="mx-auto max-w-6xl px-5 sm:px-8 pt-14 sm:pt-20 pb-2 text-center">
         <h1 className="h-display text-[clamp(2.5rem,7vw,5rem)] italic">
-          <span className="gilt">Deone Trotter Menu</span>
+          <span className="gilt">Deone&apos;s Trotter Menu</span>
         </h1>
         <div className="mt-4 flex justify-center">
           <Link href="/preorder" className="btn btn-primary">Pre-order pickup →</Link>
