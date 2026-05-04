@@ -9,6 +9,7 @@ import { MenuManager } from "./menu-manager";
 import { OrderHistory } from "./order-history";
 import { InvoiceModal, InvoiceSentToast } from "./invoice-modal";
 import { OrderQueue } from "./order-queue";
+import { BusinessEditor } from "./business-editor";
 
 type Cart = Record<string, number>;
 
@@ -32,6 +33,7 @@ export function OrderPad({ menu }: { menu: MenuItem[] }) {
   const [error, setError] = useState<string | null>(null);
   const [showMenuManager, setShowMenuManager] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showBusinessEditor, setShowBusinessEditor] = useState(false);
   const [showInvoice, setShowInvoice] = useState(false);
   const [invoiceSent, setInvoiceSent] = useState<{
     email: string;
@@ -206,6 +208,13 @@ export function OrderPad({ menu }: { menu: MenuItem[] }) {
             Edit menu
           </button>
           <button
+            onClick={() => setShowBusinessEditor(true)}
+            className="btn btn-ghost !py-2 !px-3 !text-xs hover:!border-[color:var(--rust-deep)] hover:!text-[color:var(--gold)]"
+            aria-label="Edit hours, address, phone, Instagram"
+          >
+            Edit info
+          </button>
+          <button
             onClick={clear}
             disabled={itemCount === 0}
             className="btn btn-ghost !py-2 !px-3 !text-xs disabled:opacity-40"
@@ -227,6 +236,9 @@ export function OrderPad({ menu }: { menu: MenuItem[] }) {
 
       {showMenuManager && (
         <MenuManager onClose={() => setShowMenuManager(false)} />
+      )}
+      {showBusinessEditor && (
+        <BusinessEditor onClose={() => setShowBusinessEditor(false)} />
       )}
       {showHistory && (
         <OrderHistory onClose={() => setShowHistory(false)} />
