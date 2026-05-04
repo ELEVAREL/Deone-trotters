@@ -90,9 +90,8 @@ export const MENU: MenuItem[] = [
 
 export const BUSINESS = {
   name: "Deone's Gourmet Trotters",
-  tagline: "Slow food, served loud.",
-  story:
-    "Recipes Deone learned at her grandmother's stove. Handwritten, never measured. On every plate we serve.",
+  tagline: "",
+  story: "",
   hours: [
     { day: "Tue – Thu", open: "11:00 AM", close: "8:00 PM" },
     { day: "Fri – Sat", open: "11:00 AM", close: "10:00 PM" },
