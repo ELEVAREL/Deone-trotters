@@ -51,9 +51,6 @@ export default async function Home() {
                         <div className="font-display text-lg font-semibold tracking-tight group-hover:text-[color:var(--gold)] transition-colors">
                           {item.name}
                         </div>
-                        <p className="text-sm text-[color:var(--ink-mute)] mt-2 text-pretty leading-relaxed">
-                          {item.description}
-                        </p>
                       </div>
                       <div className="text-right shrink-0">
                         <div className="font-display text-2xl text-[color:var(--gold)] font-bold whitespace-nowrap leading-tight">
